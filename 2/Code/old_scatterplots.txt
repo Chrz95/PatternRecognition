@@ -1,0 +1,262 @@
+def make_scatterplots_01(features,y,speakers):
+
+    final_features_mean = []
+    final_features_std = []
+
+    for i, file in enumerate(features):
+        final_features_mean.append([])
+        final_features_std.append([])
+        for val in range(len(file[0])):
+            feature = list(map(itemgetter(val), file))
+            final_features_mean[i].append(mean(feature))
+            final_features_std[i].append(stdev(feature))
+
+    # print(final_features_mean)
+    # print(len(final_features_mean))
+    # print(len(final_features_mean[0]))
+
+    Markers = ["d", "4", "<", "P", "*", "H", "_", "8", "s", "+", ".", "v", "1", "2", "3"]
+    Colors = ["red","green","yellow","orange","black","blue","purple","cyan","magenta"]
+    MarkersDict = {i+1:Markers[i] for i in range(0,15)}
+    ColorsDict = {i+1:Colors[i] for i in range(0,9)}
+
+    ####### Scatterplot for mean #######
+
+    first_dim_mean = list(map(itemgetter(0), final_features_mean))
+    second_dim_mean = list(map(itemgetter(1), final_features_mean))
+
+    fig,ax = plt.subplots()
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_mean)):
+        legend_elements.append(ax.scatter(first_dim_mean[i], second_dim_mean[i], c=ColorsDict[y[i]], marker=MarkersDict[int(speakers[i])],label=str(y[i]) + "_" + speakers[i]))
+        #print(MarkersDict[int(speakers[i])],speakers[i])
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1,10)]
+    legend1 = plt.legend(handles = ColorPatches,loc="upper left")
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i,linestyle='None') for i in range(1,16)]
+    legend2 = plt.legend(handles=legend_elements,loc="upper right")
+    plt.gca().add_artist(legend2)
+
+    plt.title('Mean')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    plt.savefig('Plots/5_mean.png')
+    plt.clf()
+
+    ####### Scatterplot for std #######
+
+    first_dim_std = list(map(itemgetter(0), final_features_std))
+    second_dim_std = list(map(itemgetter(1), final_features_std))
+
+    fig, ax = plt.subplots()
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_std)):
+        legend_elements.append(
+            ax.scatter(first_dim_std[i], second_dim_std[i], c=ColorsDict[y[i]], marker=MarkersDict[int(speakers[i])],
+                       label=str(y[i]) + "_" + speakers[i]))
+        #print(MarkersDict[int(speakers[i])], speakers[i])
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1, 10)]
+    legend1 = plt.legend(handles=ColorPatches,loc="upper left")
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i, linestyle='None') for i in range(1, 16)]
+    legend2 = plt.legend(handles=legend_elements,loc="upper right")
+    plt.gca().add_artist(legend2)
+
+    plt.title('Standard Deviation')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    plt.savefig('Plots/5_std.png')
+    plt.clf()
+
+def make_scatterplots_PCA_2D(features,y,speakers):
+    n_components = 2
+    final_features_mean = []
+    final_features_std = []
+
+    for i, file in enumerate(features):
+        final_features_mean.append([])
+        final_features_std.append([])
+        for val in range(len(file[0])):
+            feature = list(map(itemgetter(val), file))
+            final_features_mean[i].append(mean(feature))
+            final_features_std[i].append(stdev(feature))
+
+    pca = PCA(n_components=n_components)
+    final_features_mean = pca.fit_transform(final_features_mean)
+    final_features_std = pca.fit_transform(final_features_std)
+
+    #print(final_features_mean)
+    #print(len(final_features_mean))
+    #print(len(final_features_mean[0]))
+
+    Markers = ["d", "4", "<", "P", "*", "H", "_", "8", "s", "+", ".", "v", "1", "2", "3"]
+    Colors = ["red", "green", "yellow", "orange", "black", "blue", "purple", "cyan", "magenta"]
+    MarkersDict = {i + 1: Markers[i] for i in range(0, 15)}
+    ColorsDict = {i + 1: Colors[i] for i in range(0, 9)}
+
+    ####### Scatterplot for mean #######
+
+    first_dim_mean = list(map(itemgetter(0), final_features_mean))
+    second_dim_mean = list(map(itemgetter(1), final_features_mean))
+
+    fig, ax = plt.subplots()
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_mean)):
+        legend_elements.append(ax.scatter(first_dim_mean[i], second_dim_mean[i], c=ColorsDict[y[i]], marker=MarkersDict[int(speakers[i])],label=str(y[i]) + "_" + speakers[i]))
+        # print(MarkersDict[int(speakers[i])],speakers[i])
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1, 10)]
+    legend1 = plt.legend(handles=ColorPatches,loc='upper left')
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i, linestyle='None') for i in range(1, 16)]
+    legend2 = plt.legend(handles=legend_elements)
+    plt.gca().add_artist(legend2)
+
+    plt.title('Mean')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    plt.savefig('Plots/6_2D_mean.png')
+
+    ####### Scatterplot for std #######
+
+    first_dim_std = list(map(itemgetter(0), final_features_std))
+    second_dim_std = list(map(itemgetter(1), final_features_std))
+
+    fig, ax = plt.subplots()
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_std)):
+        legend_elements.append(
+            ax.scatter(first_dim_std[i], second_dim_std[i], c=ColorsDict[y[i]], marker=MarkersDict[int(speakers[i])],
+                       label=str(y[i]) + "_" + speakers[i]))
+        # print(MarkersDict[int(speakers[i])], speakers[i])
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1, 10)]
+    legend1 = plt.legend(handles=ColorPatches,loc='upper left')
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i, linestyle='None') for i in range(1, 16)]
+    legend2 = plt.legend(handles=legend_elements)
+    plt.gca().add_artist(legend2)
+
+    plt.title('Standard Deviation')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    plt.savefig('Plots/6_2D_std.png')
+    plt.clf()
+
+def make_scatterplots_PCA_3D(features,y,speakers):
+    n_components = 3
+    final_features_mean = []
+    final_features_std = []
+
+    for i, file in enumerate(features):
+        final_features_mean.append([])
+        final_features_std.append([])
+        for val in range(len(file[0])):
+            feature = list(map(itemgetter(val), file))
+            final_features_mean[i].append(mean(feature))
+            final_features_std[i].append(stdev(feature))
+
+    pca = PCA(n_components=n_components)
+    final_features_mean = pca.fit_transform(final_features_mean)
+    final_features_std = pca.fit_transform(final_features_std)
+
+    #print(final_features_mean)
+    #print(len(final_features_mean))
+    #print(len(final_features_mean[0]))
+
+    Markers = ["d", "4", "<", "P", "*", "H", "_", "8", "s", "+", ".", "v", "1", "2", "3"]
+    Colors = ["red", "green", "yellow", "orange", "black", "blue", "purple", "cyan", "magenta"]
+    MarkersDict = {i + 1: Markers[i] for i in range(0, 15)}
+    ColorsDict = {i + 1: Colors[i] for i in range(0, 9)}
+
+    ####### Scatterplot for mean #######
+
+    first_dim_mean = list(map(itemgetter(0), final_features_mean))
+    second_dim_mean = list(map(itemgetter(1), final_features_mean))
+    third_dim_mean = list(map(itemgetter(2), final_features_mean))
+
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_mean)):
+        legend_elements.append(ax.scatter3D(first_dim_mean[i], second_dim_mean[i],third_dim_mean[i] , c=ColorsDict[y[i]], marker=MarkersDict[int(speakers[i])],label=str(y[i]) + "_" + speakers[i]))
+        # print(MarkersDict[int(speakers[i])],speakers[i])
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1, 10)]
+    legend1 = plt.legend(handles=ColorPatches,loc='upper left')
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i, linestyle='None') for i in range(1, 16)]
+    legend2 = plt.legend(handles=legend_elements)
+    plt.gca().add_artist(legend2)
+
+    plt.title('Mean')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    ax.set_zlabel('Third feature')
+    plt.savefig('Plots/6_3D_mean.png')
+
+    ####### Scatterplot for std #######
+
+    first_dim_std = list(map(itemgetter(0), final_features_std))
+    second_dim_std = list(map(itemgetter(1), final_features_std))
+    third_dim_std = list(map(itemgetter(2), final_features_std))
+
+    fig = plt.figure()
+    ax = plt.axes(projection="3d")
+    fig.set_size_inches(17, 9)
+    legend_elements = []
+
+    # Design each point with its respective color and marker
+    for i in range(len(first_dim_std)):
+        legend_elements.append(
+            ax.scatter3D(first_dim_std[i], second_dim_std[i], third_dim_std[i], c=ColorsDict[y[i]],
+                         marker=MarkersDict[int(speakers[i])], label=str(y[i]) + "_" + speakers[i]))
+
+    # Color legend
+    ColorPatches = [mpatches.Patch(color=ColorsDict[i], label=i) for i in range(1, 10)]
+    legend1 = plt.legend(handles=ColorPatches,loc='upper left')
+    plt.gca().add_artist(legend1)
+
+    # Marker legend
+    legend_elements = [Line2D([0], [0], marker=MarkersDict[i], label=i, linestyle='None') for i in range(1, 16)]
+    legend2 = plt.legend(handles=legend_elements)
+    plt.gca().add_artist(legend2)
+
+    plt.title('Standard Deviation')
+    plt.xlabel('First feature')
+    plt.ylabel('Second feature')
+    ax.set_zlabel('Third feature')
+    plt.savefig('Plots/6_3D_std.png')
+    plt.clf()
